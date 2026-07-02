@@ -1,0 +1,1085 @@
+<!doctype html>
+<html lang="en">
+ <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Lost Library</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Alegreya:ital,wght@0,400;0,700;0,900;1,400&amp;family=Cinzel+Decorative:wght@400;700;900&amp;family=Alegreya+Sans:wght@400;500;700&amp;display=swap" rel="stylesheet">
+  <style>
+:root{--navy:#0a1628;--gold:#c9a227;--brown:#5c3d2e;--ivory:#f5f0e8;--forest:#1a4a3a;--copper:#b87333;--emerald:#2d6b4f;--magic-blue:#1e3a5f;--purple:#4a2d6b;--dark-bg:#060d1a}
+body{font-family:'Alegreya',serif;background:var(--dark-bg);color:var(--ivory);overflow-x:hidden}
+.font-cinzel{font-family:'Cinzel Decorative',cursive}
+.font-alegreya-sans{font-family:'Alegreya Sans',sans-serif}
+.particle{position:fixed;width:3px;height:3px;background:var(--gold);border-radius:50%;pointer-events:none;opacity:0;animation:float-particle 8s infinite ease-in-out}
+@keyframes float-particle{0%,100%{opacity:0;transform:translateY(0) translateX(0)}20%{opacity:.8}80%{opacity:.4}100%{transform:translateY(-100vh) translateX(30px);opacity:0}}
+.candle-glow{animation:flicker 3s infinite alternate}
+@keyframes flicker{0%,100%{opacity:.8;filter:brightness(1)}25%{opacity:.6;filter:brightness(.9)}50%{opacity:1;filter:brightness(1.1)}75%{opacity:.7;filter:brightness(.95)}}
+.float-anim{animation:gentle-float 6s infinite ease-in-out}
+@keyframes gentle-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+.fade-in{animation:fadeIn 1s ease forwards}
+@keyframes fadeIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+.glow-gold{box-shadow:0 0 20px rgba(201,162,39,.4),0 0 40px rgba(201,162,39,.2)}
+.glow-text{text-shadow:0 0 10px rgba(201,162,39,.6)}
+.view{display:none;min-height:100vh}
+.view.active{display:block;animation:fadeIn .6s ease}
+::-webkit-scrollbar{width:8px}
+::-webkit-scrollbar-track{background:var(--navy)}
+::-webkit-scrollbar-thumb{background:var(--gold);border-radius:4px}
+.map-door{transition:all .4s ease;border:2px solid rgba(201,162,39,.3);cursor:pointer}
+.map-door:hover:not(.locked){transform:scale(1.05);box-shadow:0 0 30px rgba(201,162,39,.5);border-color:var(--gold)}
+.map-door.locked{opacity:.5;cursor:not-allowed;filter:grayscale(.5)}
+.map-door.completed{border-color:var(--emerald);box-shadow:0 0 20px rgba(45,107,79,.4)}
+.activity-card{background:linear-gradient(135deg,rgba(10,22,40,.9),rgba(30,58,95,.7));border:1px solid rgba(201,162,39,.2);border-radius:12px;transition:all .3s}
+.activity-card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.activity-card.correct{border-color:var(--emerald);box-shadow:0 0 15px rgba(45,107,79,.4)}
+.activity-card.incorrect{border-color:#8b2020;box-shadow:0 0 15px rgba(139,32,32,.3)}
+.elias-box{background:linear-gradient(135deg,rgba(10,22,40,.95),rgba(74,45,107,.3));border:1px solid rgba(201,162,39,.4);border-radius:16px;position:relative}
+.elias-box::before{content:' ✦ ';position:absolute;top:-12px;left:24px;color:var(--gold);font-size:24px}
+.progress-fill{background:linear-gradient(90deg,var(--emerald),var(--gold));transition:width .8s ease;border-radius:999px;height:100%}
+.hint-panel{background:linear-gradient(135deg,rgba(26,74,58,.9),rgba(10,22,40,.95));border:1px solid rgba(45,107,79,.4);border-radius:12px}
+.feedback-overlay{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;background:rgba(6,13,26,.85);backdrop-filter:blur(4px)}
+.sound-btn{position:fixed;top:16px;right:16px;z-index:200;background:rgba(10,22,40,.8);border:1px solid rgba(201,162,39,.4);border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;cursor:pointer;color:var(--gold);transition:all .3s}
+.sound-btn:hover{background:rgba(201,162,39,.2)}
+.writing-area{background:rgba(10,22,40,.6);border:1px solid rgba(201,162,39,.3);border-radius:8px;color:var(--ivory);font-family:'Alegreya',serif;resize:vertical}
+.writing-area:focus{outline:none;border-color:var(--gold)}
+.badge-item{background:linear-gradient(135deg,rgba(201,162,39,.1),rgba(74,45,107,.2));border:1px solid rgba(201,162,39,.3);border-radius:12px}
+@keyframes key-glow{0%,100%{filter:drop-shadow(0 0 8px rgba(201,162,39,.6))}50%{filter:drop-shadow(0 0 20px rgba(201,162,39,1))}}
+.key-glow{animation:key-glow 2s infinite}
+.book-pedestal{transition:all .4s;cursor:pointer;border:2px solid rgba(201,162,39,.2);border-radius:16px;overflow:hidden}
+.book-pedestal:hover{transform:translateY(-8px) scale(1.03);box-shadow:0 0 40px rgba(201,162,39,.4);border-color:var(--gold)}
+.book-pedestal.completed-book{border-color:var(--emerald);box-shadow:0 0 20px rgba(45,107,79,.3)}
+.mission-tab{padding:8px 16px;border-radius:8px;cursor:pointer;transition:all .3s;border:1px solid transparent;font-family:'Alegreya Sans',sans-serif;font-size:13px}
+.mission-tab:hover{border-color:rgba(201,162,39,.4)}
+.mission-tab.active-tab{background:rgba(201,162,39,.2);border-color:var(--gold);color:var(--gold)}
+.mission-tab.done-tab{background:rgba(45,107,79,.2);border-color:var(--emerald);color:var(--emerald)}
+.passport-stamp{width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:2rem;border:3px solid rgba(201,162,39,.3);transition:all .3s;background:rgba(10,22,40,.6)}
+.passport-stamp.earned{border-color:var(--gold);background:rgba(201,162,39,.15);box-shadow:0 0 15px rgba(201,162,39,.3)}
+.passport-stamp:hover.earned{transform:scale(1.1)}
+@keyframes celebrate{0%{transform:scale(1)}50%{transform:scale(1.02)}100%{transform:scale(1)}}
+.celebrate-pulse{animation:celebrate 2s infinite}
+.teacher-section{border:1px solid rgba(201,162,39,.2);border-radius:12px;margin-bottom:12px;overflow:hidden}
+.teacher-section-header{padding:16px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:rgba(10,22,40,.6)}
+.teacher-section-header:hover{background:rgba(201,162,39,.1)}
+.teacher-section-body{padding:16px;display:none;border-top:1px solid rgba(201,162,39,.1)}
+.teacher-section.open .teacher-section-body{display:block}
+  </style>
+ </head>
+ <body data-template-id="__page-root" class="w-full">
+  <div id="particles" aria-hidden="true"></div>
+  <button class="sound-btn" id="sound-toggle" aria-label="Toggle sound"><i data-lucide="volume-2" style="width:20px;height:20px;"></i></button>
+
+  <section id="view-home" class="view active">
+   <div class="relative w-full" style="min-height:100vh">
+    <div class="absolute inset-0 overflow-hidden">
+     <img data-template-id="hero-image" class="canva-image w-full h-full object-cover opacity-40" loading="lazy" src="https://images.unsplash.com/photo-1507842217343-583bb7270b66?q=80&w=2000">
+     <div class="absolute inset-0 bg-gradient-to-t from-[#060d1a] via-[#060d1a]/60 to-transparent"></div>
+    </div>
+    <div class="relative z-10 flex flex-col items-center justify-center text-center px-6" style="min-height:100vh">
+     <div class="float-anim mb-8"><span class="text-5xl">📖</span></div>
+     <h1 data-template-id="main-title" class="canva-text font-cinzel text-4xl md:text-6xl lg:text-7xl glow-text mb-4">The Lost Library</h1>
+     <p data-template-id="main-subtitle" class="canva-text font-alegreya-sans text-lg md:text-xl max-w-2xl mx-auto mb-12 opacity-90">Enter a digital sanctuary where forgotten pages hold the keys to magic, language proficiency, and narrative mastery.</p>
+     <button data-template-id="begin-btn" class="canva-button font-cinzel text-lg px-10 py-4 bg-[#c9a227] text-[#0a1628] rounded-lg glow-gold transition-all hover:scale-105" onclick="showView('view-academy')">Begin Quest</button>
+     <p data-template-id="home-tagline" class="canva-text mt-8 text-sm opacity-60 font-alegreya-sans">Designed for Ninth-Grade Advanced EFL Learners</p>
+    </div>
+   </div>
+  </section>
+
+  <section id="view-academy" class="view">
+   <div class="max-w-4xl mx-auto px-6 py-12">
+    <div class="text-center mb-12 fade-in">
+     <img data-template-id="academy-image" class="canva-image w-full max-w-lg mx-auto h-64 object-cover rounded-xl mb-8 glow-gold" loading="lazy" src="https://images.unsplash.com/photo-1516979187457-637abb4f9353?q=80&w=1200">
+     <h2 data-template-id="academy-title" class="canva-text font-cinzel text-3xl md:text-4xl glow-text mb-4">BookTok Academy</h2>
+     <p data-template-id="academy-intro" class="canva-text text-lg opacity-90 max-w-2xl mx-auto">Welcome to the Academy hub. Here, literature is not just read—it is experienced, broken down, and rebuilt.</p>
+    </div>
+    <div class="elias-box p-6 mb-8 fade-in">
+     <div class="flex items-start gap-4">
+      <img data-template-id="elias-avatar" class="canva-image w-16 h-16 rounded-full object-cover border-2 border-[#c9a227] flex-shrink-0" loading="lazy" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400">
+      <div>
+       <h3 data-template-id="elias-name" class="canva-text font-cinzel text-lg mb-2">Elias, The Last Librarian</h3>
+       <p data-template-id="elias-welcome" class="canva-text opacity-90 leading-relaxed">Greetings, traveler. I have watched over these archives for centuries. The shadows are growing, and the stories are losing their words. I need a Literary Guardian to help restore them. Create your avatar profile to unlock the Library gates.</p>
+      </div>
+     </div>
+    </div>
+    <div class="grid md:grid-cols-3 gap-4 mb-8">
+     <div class="canva-card activity-card p-5 text-center">
+      <div class="text-3xl mb-3">🔑</div>
+      <h4 class="font-cinzel text-sm mb-2">Collect Golden Keys</h4>
+      <p class="text-sm opacity-70 font-alegreya-sans">Solve language puzzles across five distinct library wings to unlock the mythical Hall of Infinite Stories.</p>
+     </div>
+     <div class="canva-card activity-card p-5 text-center">
+      <div class="text-3xl mb-3">💎</div>
+      <h4 class="font-cinzel text-sm mb-2">Gather Story Crystals</h4>
+      <p class="text-sm opacity-70 font-alegreya-sans">Earn crystals by diving deep into classic and modern worlds, analyzing vocabulary, and completing creative responses.</p>
+     </div>
+     <div class="canva-card activity-card p-5 text-center">
+      <div class="text-3xl mb-3">🏅</div>
+      <h4 class="font-cinzel text-sm mb-2">Claim Mastery</h4>
+      <p class="text-sm opacity-70 font-alegreya-sans">Complete all text repairs and narrative chronicles to gain your official Master Literary Guardian credentials.</p>
+     </div>
+    </div>
+    <div class="activity-card p-8">
+     <h3 class="font-cinzel text-xl text-center mb-6">Create Your Guardian Identity</h3>
+     <form id="profile-form" class="space-y-4 max-w-md mx-auto">
+      <label class="block text-sm font-alegreya-sans mb-1" for="guardian-name-input">Guardian Name / Character Call Sign</label>
+      <input id="guardian-name-input" type="text" class="w-full px-4 py-3 rounded-lg writing-area" required placeholder="Enter your guardian name...">
+      <div class="pt-4">
+       <label class="block text-sm font-alegreya-sans mb-3">Select Your Avatar Token</label>
+       <div class="flex gap-3 justify-center flex-wrap" id="avatar-selection">
+        <button type="button" class="text-3xl p-2 rounded-lg border border-transparent hover:border-[#c9a227] transition-all avatar-opt bg-rgba(201,162,39,0.1)" data-avatar="🧙">🧙</button>
+        <button type="button" class="text-3xl p-2 rounded-lg border border-transparent hover:border-[#c9a227] transition-all avatar-opt" data-avatar="🧝">🧝</button>
+        <button type="button" class="text-3xl p-2 rounded-lg border border-transparent hover:border-[#c9a227] transition-all avatar-opt" data-avatar="🦉">🦉</button>
+        <button type="button" class="text-3xl p-2 rounded-lg border border-transparent hover:border-[#c9a227] transition-all avatar-opt" data-avatar="🐉">🐉</button>
+        <button type="button" class="text-3xl p-2 rounded-lg border border-transparent hover:border-[#c9a227] transition-all avatar-opt" data-avatar="⚔️">⚔️</button>
+        <button type="button" class="text-3xl p-2 rounded-lg border border-transparent hover:border-[#c9a227] transition-all avatar-opt" data-avatar="📚">📚</button>
+       </div>
+      </div>
+      <button type="submit" class="w-full font-cinzel py-3 bg-[#c9a227] text-[#0a1628] rounded-lg glow-gold mt-6 transition-all hover:scale-[1.02]">Enter The Gates</button>
+     </form>
+    </div>
+   </div>
+  </section>
+
+  <section id="view-profile" class="view">
+   <div class="max-w-4xl mx-auto px-6 py-12">
+    <button class="mb-6 flex items-center gap-2 opacity-70 hover:opacity-100 transition-all" onclick="showView('view-map')">
+     <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span class="font-alegreya-sans text-sm">Return to Library</span>
+    </button>
+    <div class="activity-card p-8">
+     <div class="flex flex-col md:flex-row items-center gap-6 mb-8">
+      <div class="text-6xl" id="profile-avatar-display">🧙</div>
+      <div class="text-center md:text-left">
+       <h2 class="font-cinzel text-2xl md:text-3xl glow-text" id="profile-name-display">Guardian</h2>
+       <p class="font-alegreya-sans text-sm opacity-70 mt-1">Current Ranking Status</p>
+       <p class="font-alegreya-sans text-sm opacity-60 mt-1" id="profile-rank-value">Apprentice Guardian</p>
+      </div>
+     </div>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="text-center p-4 rounded-lg bg-[rgba(201,162,39,0.1)] border border-[rgba(201,162,39,0.2)]">
+       <div class="text-2xl mb-1">⚡</div>
+       <div class="font-cinzel text-lg" id="stat-xp">0</div>
+       <div class="font-alegreya-sans text-xs opacity-60">XP</div>
+      </div>
+      <div class="text-center p-4 rounded-lg bg-[rgba(201,162,39,0.1)] border border-[rgba(201,162,39,0.2)]">
+       <div class="text-2xl mb-1">🔑</div>
+       <div class="font-cinzel text-lg" id="stat-keys">0/5</div>
+       <div class="font-alegreya-sans text-xs opacity-60">Golden Keys</div>
+      </div>
+      <div class="text-center p-4 rounded-lg bg-[rgba(201,162,39,0.1)] border border-[rgba(201,162,39,0.2)]">
+       <div class="text-2xl mb-1">💎</div>
+       <div class="font-cinzel text-lg" id="stat-crystals">0</div>
+       <div class="font-alegreya-sans text-xs opacity-60">Story Crystals</div>
+      </div>
+      <div class="text-center p-4 rounded-lg bg-[rgba(201,162,39,0.1)] border border-[rgba(201,162,39,0.2)]">
+       <div class="text-2xl mb-1">📖</div>
+       <div class="font-cinzel text-lg" id="stat-restoration">0%</div>
+       <div class="font-alegreya-sans text-xs opacity-60">Restored</div>
+      </div>
+     </div>
+     <div class="mb-6">
+      <div class="flex justify-between font-alegreya-sans text-sm mb-2">
+       <span>Overall Archive Progress</span><span id="progress-percent">0%</span>
+      </div>
+      <div class="w-full h-3 rounded-full bg-[rgba(10,22,40,0.8)] border border-[rgba(201,162,39,0.2)]">
+       <div class="progress-fill" id="progress-bar" style="width:0%"></div>
+      </div>
+     </div>
+     <h3 class="font-cinzel text-lg mb-4 text-[#c9a227]">Guardian Inventory</h3>
+     <div class="grid grid-cols-3 md:grid-cols-6 gap-3" id="inventory-grid">
+      <div class="badge-item p-3 text-center opacity-30">
+       <div class="text-2xl">🪶</div>
+       <div class="font-alegreya-sans text-xs mt-1">Quill</div>
+      </div>
+      <div class="badge-item p-3 text-center opacity-30">
+       <div class="text-2xl">🔍</div>
+       <div class="font-alegreya-sans text-xs mt-1">Lens</div>
+      </div>
+      <div class="badge-item p-3 text-center opacity-30">
+       <div class="text-2xl">🧭</div>
+       <div class="font-alegreya-sans text-xs mt-1">Compass</div>
+      </div>
+      <div class="badge-item p-3 text-center opacity-30">
+       <div class="text-2xl">📓</div>
+       <div class="font-alegreya-sans text-xs mt-1">Journal</div>
+      </div>
+      <div class="badge-item p-3 text-center opacity-30">
+       <div class="text-2xl">🧪</div>
+       <div class="font-alegreya-sans text-xs mt-1">Ink</div>
+      </div>
+      <div class="badge-item p-3 text-center opacity-30">
+       <div class="text-2xl">🗝️</div>
+       <div class="font-alegreya-sans text-xs mt-1">Master Key</div>
+      </div>
+     </div>
+     <h3 class="font-cinzel text-lg mt-8 mb-4" style="color:var(--gold)">Badges Earned</h3>
+     <div class="grid grid-cols-2 md:grid-cols-4 gap-3" id="badges-grid"></div>
+    </div>
+   </div>
+  </section>
+
+  <section id="view-map" class="view">
+   <div class="max-w-5xl mx-auto px-6 py-8">
+    <div class="flex justify-between items-center mb-6">
+     <h2 class="font-cinzel text-2xl md:text-3xl glow-text">Library Archive Map</h2>
+     <button class="flex items-center gap-2 px-4 py-2 rounded-lg border border-[rgba(201,162,39,0.3)] hover:border-[#c9a227] transition-all font-alegreya-sans text-sm" onclick="showView('view-profile')">
+      <span id="map-avatar">🧙</span><span id="map-name">Guardian</span>
+     </button>
+    </div>
+    <div class="flex gap-4 mb-8 font-alegreya-sans text-sm opacity-80">
+     <span>⚡ <span id="map-xp-val">0</span> XP</span>
+     <span>🔑 <span id="map-keys-val">0</span>/5</span>
+     <span>💎 <span id="map-crystals-val">0</span></span>
+     <span>📖 <span id="map-restore-val">0</span>%</span>
+    </div>
+
+    <h3 class="font-cinzel text-lg mb-4 opacity-70" style="color:var(--gold)">Part I — Restore the Library Wings</h3>
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+     <div class="map-door rounded-xl overflow-hidden" onclick="enterLevel(1)">
+      <img class="w-full h-40 object-cover" loading="lazy" src="https://images.unsplash.com/photo-1481627834876-b7833e8f5570?q=80&w=600">
+      <div class="p-4 bg-[rgba(10,22,40,0.9)]">
+       <h3 class="font-cinzel text-sm mb-1">Level 1: The Chamber of Definitions</h3>
+       <p class="font-alegreya-sans text-xs opacity-60">Hunt down tier-3 contextual vocabulary and literary verbs.</p>
+      </div>
+     </div>
+     <div class="map-door locked rounded-xl overflow-hidden" onclick="enterLevel(2)">
+      <img class="w-full h-40 object-cover" loading="lazy" src="https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?q=80&w=600">
+      <div class="p-4 bg-[rgba(10,22,40,0.9)]">
+       <h3 class="font-cinzel text-sm mb-1">Level 2: Vault of Echoed Passages</h3>
+       <p class="font-alegreya-sans text-xs opacity-60">Unlock contextual meanings and analyze subtext structures.</p>
+      </div>
+     </div>
+     <div class="map-door locked rounded-xl overflow-hidden" onclick="enterLevel(3)">
+      <img class="w-full h-40 object-cover" loading="lazy" src="https://images.unsplash.com/photo-1514894780887-121968d00567?q=80&w=600">
+      <div class="p-4 bg-[rgba(10,22,40,0.9)]">
+       <h3 class="font-cinzel text-sm mb-1">Level 3: Hall of Cryptic Sentences</h3>
+       <p class="font-alegreya-sans text-xs opacity-60">Repair complex grammatical systems and sentence connectors.</p>
+      </div>
+     </div>
+     <div class="map-door locked rounded-xl overflow-hidden" onclick="enterLevel(4)">
+      <img class="w-full h-40 object-cover" loading="lazy" src="https://images.unsplash.com/photo-1476275466078-4007374efbbe?q=80&w=600">
+      <div class="p-4 bg-[rgba(10,22,40,0.9)]">
+       <h3 class="font-cinzel text-sm mb-1">Level 4: Crosswords of Antiquity</h3>
+       <p class="font-alegreya-sans text-xs opacity-60">Complete complex vocabulary puzzles and advanced synonym grids.</p>
+      </div>
+     </div>
+     <div class="map-door locked rounded-xl overflow-hidden" onclick="enterLevel(5)">
+      <img class="w-full h-40 object-cover" loading="lazy" src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?q=80&w=600">
+      <div class="p-4 bg-[rgba(10,22,40,0.9)]">
+       <h3 class="font-cinzel text-sm mb-1">Level 5: Crypt of Deep Insights</h3>
+       <p class="font-alegreya-sans text-xs opacity-60">Solve intricate textual inferences and complete raw text analysis.</p>
+      </div>
+     </div>
+    </div>
+
+    <h3 class="font-cinzel text-lg mb-4 opacity-70" style="color:var(--gold)">Part II — Hall of Infinite Stories</h3>
+    <div class="grid md:grid-cols-2 gap-6 mb-8">
+     <div class="map-door locked rounded-xl overflow-hidden p-6 bg-gradient-to-br from-[rgba(10,22,40,0.9)] to-[rgba(74,45,107,0.3)]" id="hall-infinite-door" onclick="showView('view-hall')">
+      <div class="flex justify-between items-start mb-4">
+       <div class="text-4xl">🌌</div>
+       <span class="text-xs px-3 py-1 rounded bg-[#4a2d6b] border border-[rgba(201,162,39,0.3)] text-[#c9a227] font-cinzel tracking-wider" id="hall-lock-label">Requires 5 Keys</span>
+      </div>
+      <h3 class="font-cinzel text-lg mb-2 text-white">Enter the Portal</h3>
+      <p class="font-alegreya-sans text-sm opacity-70 leading-relaxed">Access ten complex, authentic narrative realms. Complete custom tasks mapping vocabulary, listening audio placeholders, and deep essay entries.</p>
+     </div>
+     <div class="map-door locked rounded-xl overflow-hidden p-6 bg-gradient-to-br from-[rgba(10,22,40,0.9)] to-[rgba(26,74,58,0.3)]" id="passport-door" onclick="showView('view-passport')">
+      <div class="text-4xl mb-4">🛂</div>
+      <h3 class="font-cinzel text-lg mb-2 text-white">Literary Passport</h3>
+      <p class="font-alegreya-sans text-sm opacity-70 leading-relaxed">Review earned world collection stamps, analyze metrics, and see a visual timeline of your cross-textual literacy progress.</p>
+     </div>
+    </div>
+
+    <div class="teacher-section bg-gradient-to-r from-[rgba(10,22,40,0.8)] to-[rgba(30,58,95,0.4)] transition-all">
+     <div class="teacher-section-header" onclick="this.parentElement.classList.toggle('open')">
+      <div class="flex items-center gap-3">
+       <i data-lucide="shield-check" style="color:var(--gold)"></i>
+       <h3 class="font-cinzel text-sm text-[#c9a227]">Teacher Resources & Pedagogy Specs</h3>
+      </div>
+      <i data-lucide="chevron-down" style="width:18px;height:18px;"></i>
+     </div>
+     <div class="teacher-section-body space-y-4 font-alegreya-sans text-sm opacity-90 leading-relaxed border-t border-[rgba(201,162,39,0.1)]">
+      <p><strong>Methodological Alignment:</strong> Task-Based Language Teaching (TBLT) & Content-Based Instruction (CBI). Activities focus on meaningful communication, authentic texts, and experiential literary interaction.</p>
+      <p><strong>CEFR Level:</strong> B1-C1 advanced scale targeting comprehension, deep contextual inference, structural writing mechanics, and vocabulary acquisition.</p>
+      <p><strong>Rubrics:</strong> Evaluated across precise metrics: Reading Inference (1-5), Critical Writing Structure (1-5), and Personal Language Reflections (1-5).</p>
+     </div>
+    </div>
+   </div>
+  </section>
+
+  <section id="view-level-detail" class="view">
+   <div class="max-w-4xl mx-auto px-6 py-12">
+    <button class="mb-6 flex items-center gap-2 opacity-70 hover:opacity-100 transition-all" onclick="showView('view-map')">
+     <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span class="font-alegreya-sans text-sm">Back to Map</span>
+    </button>
+    <div class="activity-card p-8 mb-8">
+     <h2 class="font-cinzel text-2xl md:text-3xl text-center glow-text mb-2" id="l1-title">Level</h2>
+     <p class="font-alegreya-sans text-center opacity-70 mb-8 max-w-xl mx-auto" id="l1-desc"></p>
+     <div class="elias-box p-6 mb-8" id="l1-intro">
+      <div class="flex items-start gap-4">
+       <img class="w-14 h-14 rounded-full object-cover border-2 border-[#c9a227]" src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=400">
+       <div>
+        <p class="font-cinzel text-sm mb-1 opacity-70">Elias whispers:</p>
+        <p class="leading-relaxed" id="elias-l1-speech">The texts are broken here. Complete all sublevel puzzles accurately to claim a Golden Archive Key.</p>
+       </div>
+      </div>
+      <div class="text-center mt-6">
+       <button class="font-cinzel px-8 py-3 bg-[#c9a227] text-[#0a1628] rounded-lg glow-gold hover:scale-105 transition-all" id="l1-begin-btn" onclick="startSublevel(state.currentLevel, 1)">Commence Challenges</button>
+      </div>
+     </div>
+     <div id="l1-sublevel" class="hidden"></div>
+    </div>
+   </div>
+  </section>
+
+  <section id="view-hall" class="view">
+   <div class="max-w-6xl mx-auto px-6 py-12">
+    <div class="flex flex-col md:flex-row justify-between items-center mb-12 gap-4">
+     <div>
+      <button class="mb-4 flex items-center gap-2 opacity-70 hover:opacity-100 transition-all" onclick="showView('view-map')">
+       <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span class="font-alegreya-sans text-sm">Return to Map</span>
+      </button>
+      <h2 class="font-cinzel text-3xl md:text-4xl glow-text">The Hall of Infinite Stories</h2>
+     </div>
+     <button class="px-6 py-3 rounded-lg border-2 border-dashed border-[#c9a227] hover:bg-[rgba(201,162,39,0.1)] transition-all font-cinzel text-sm flex items-center gap-2" id="blank-book-door" onclick="showView('view-blank-book')" style="display:none">
+      <span>✍️</span> Author a Blank Chronicle
+     </button>
+    </div>
+    <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6" id="worlds-container"></div>
+   </div>
+  </section>
+
+  <section id="view-blank-book" class="view">
+   <div class="max-w-3xl mx-auto px-6 py-12">
+    <button class="mb-6 flex items-center gap-2 opacity-70 hover:opacity-100 transition-all" onclick="showView('view-hall')">
+     <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span class="font-alegreya-sans text-sm">Return to Hall</span>
+    </button>
+    <div class="text-center mb-8">
+     <img class="w-full max-w-md mx-auto h-48 object-cover rounded-xl mb-6" src="https://images.unsplash.com/photo-1455390582262-044cdead277a?q=80&w=800">
+     <h2 class="font-cinzel text-2xl glow-text mb-3">The Blank Chronicle</h2>
+     <p class="font-alegreya-sans opacity-80">You have explored all worlds. Now, the library rewards you with a blank canvas. Write your own narrative legacy.</p>
+    </div>
+    <form id="blank-book-form" class="space-y-4" onsubmit="submitBlankBook(event)">
+     <div>
+      <label class="font-alegreya-sans text-sm opacity-70 block mb-1">Title</label>
+      <input type="text" class="writing-area w-full px-4 py-3" id="bb-title" required placeholder="Your story title...">
+     </div>
+     <div>
+      <label class="font-alegreya-sans text-sm opacity-70 block mb-1">Genre</label>
+      <input type="text" class="writing-area w-full px-4 py-3" id="bb-genre" required placeholder="Fantasy, Mystery, Science Fiction...">
+     </div>
+     <div>
+      <label class="font-alegreya-sans text-sm opacity-70 block mb-1">Characters</label>
+      <textarea class="writing-area w-full px-4 py-3 h-20" id="bb-characters" required placeholder="Describe your protagonist and key character dynamics..."></textarea>
+     </div>
+     <div>
+      <label class="font-alegreya-sans text-sm opacity-70 block mb-1">Setting & Narrative Anchors</label>
+      <textarea class="writing-area w-full px-4 py-3 h-20" id="bb-setting" required placeholder="Where and when does your chronicle take place?"></textarea>
+     </div>
+     <div>
+      <label class="font-alegreya-sans text-sm opacity-70 block mb-1">Plot Summary & Climax Outline</label>
+      <textarea class="writing-area w-full px-4 py-3 h-32" id="bb-plot" required placeholder="Draft a comprehensive plot synopsis outlining your structural climax..."></textarea>
+     </div>
+     <button type="submit" class="w-full font-cinzel py-3 bg-[#c9a227] text-[#0a1628] rounded-lg glow-gold transition-all hover:scale-105">Forge Narrative Document</button>
+    </form>
+   </div>
+  </section>
+
+  <section id="view-world" class="view">
+   <div class="max-w-5xl mx-auto px-6 py-12">
+    <button class="mb-6 flex items-center gap-2 opacity-70 hover:opacity-100 transition-all" onclick="showView('view-hall')">
+     <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span class="font-alegreya-sans text-sm">Exit Realm Workspace</span>
+    </button>
+    <div class="activity-card p-8 mb-6 text-center" id="world-header"></div>
+    <div class="flex gap-2 overflow-x-auto pb-3 mb-8 border-b border-[rgba(201,162,39,0.1)]" id="mission-tabs"></div>
+    <div id="mission-workspace"></div>
+   </div>
+  </section>
+
+  <section id="view-passport" class="view">
+   <div class="max-w-4xl mx-auto px-6 py-12">
+    <button class="mb-6 flex items-center gap-2 opacity-70 hover:opacity-100 transition-all" onclick="showView('view-map')">
+     <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span class="font-alegreya-sans text-sm">Return to Map</span>
+    </button>
+    <div class="activity-card p-8 text-center">
+     <h2 class="font-cinzel text-3xl glow-text mb-2">Your Guardian Passport</h2>
+     <p class="font-alegreya-sans opacity-70 mb-8">Review the stamps earned across the multi-textual universe.</p>
+     <div class="flex justify-center gap-6 flex-wrap mb-8" id="passport-stamps-container"></div>
+     <div class="w-full h-px bg-[rgba(201,162,39,0.2)] my-8"></div>
+     <button class="font-cinzel px-8 py-3 bg-[#c9a227] text-[#0a1628] rounded-lg glow-gold hover:scale-105 transition-all text-sm" onclick="showView('view-celebration')">View Final Credentials Certificate</button>
+    </div>
+   </div>
+  </section>
+
+  <section id="view-celebration" class="view">
+   <div class="max-w-3xl mx-auto px-6 py-12">
+    <button class="mb-6 flex items-center gap-2 opacity-70 hover:opacity-100 transition-all" onclick="showView('view-map')">
+     <i data-lucide="arrow-left" style="width:18px;height:18px;"></i><span class="font-alegreya-sans text-sm">Return to Map</span>
+    </button>
+    <div class="activity-card p-8 text-center" style="border:3px solid var(--gold); background:linear-gradient(135deg,rgba(10,22,40,.95),rgba(74,45,107,.2))">
+     <div class="text-4xl mb-2">🏅</div>
+     <h2 class="font-cinzel text-2xl glow-text mb-1" style="color:var(--gold)">MASTER LITERARY GUARDIAN</h2>
+     <div class="w-16 h-0.5 mx-auto my-4" style="background:var(--gold)"></div>
+     <p class="font-alegreya-sans text-sm opacity-60 mb-2">This certifies that</p>
+     <p class="font-cinzel text-xl mb-2 text-white" id="cert2-name">Guardian</p>
+     <p class="font-alegreya-sans text-sm opacity-70 mb-4">has successfully completed the Hall of Infinite Stories, explored all ten literary worlds, and proven full multi-textual literacy and narrative analysis mastery.</p>
+     <div class="grid grid-cols-2 gap-4 text-left font-alegreya-sans text-xs opacity-60 mb-6 max-w-sm mx-auto">
+      <div>📅 <span id="cert2-date"></span></div>
+      <div>🌍 10 Worlds Explored</div>
+      <div>🛂 Passport Completed</div>
+      <div>🏆 BookTok Academy Seal</div>
+     </div>
+     <p class="font-alegreya-sans text-xs italic opacity-50 mb-6">Digitally signed by Elias — The Last Librarian</p>
+     <button class="font-cinzel px-6 py-2 rounded-lg bg-[#c9a227] text-[#0a1628] hover:scale-105 transition-all text-sm" onclick="alert('Downloading certificate process...')">Download Certificate Blueprint</button>
+    </div>
+   </div>
+  </section>
+
+  <div id="feedback-overlay" class="feedback-overlay hidden">
+   <div class="activity-card p-8 max-w-md w-full text-center fade-in border-2">
+    <div class="text-5xl mb-4" id="feedback-icon">✨</div>
+    <h3 class="font-cinzel text-xl mb-2" id="feedback-title">Correct</h3>
+    <p class="font-alegreya-sans text-sm opacity-80 mb-6" id="feedback-desc"></p>
+    <button class="font-cinzel px-6 py-2 bg-[#c9a227] text-[#0a1628] rounded-lg w-full transition-all hover:scale-105" id="feedback-btn">Continue</button>
+   </div>
+  </div>
+
+  <script>
+    // System State Container
+    const state = {
+      name: localStorage.getItem('gl_name') || '',
+      avatar: localStorage.getItem('gl_avatar') || '🧙',
+      xp: parseInt(localStorage.getItem('gl_xp')) || 0,
+      keys: parseInt(localStorage.getItem('gl_keys')) || 0,
+      crystals: parseInt(localStorage.getItem('gl_crystals')) || 0,
+      restoration: parseInt(localStorage.getItem('gl_restoration')) || 0,
+      levelsCompleted: JSON.parse(localStorage.getItem('gl_levels')) || [],
+      worldsCompleted: JSON.parse(localStorage.getItem('gl_worlds')) || [],
+      worldMissions: JSON.parse(localStorage.getItem('gl_missions')) || {},
+      inventory: JSON.parse(localStorage.getItem('gl_inventory')) || [],
+      badges: JSON.parse(localStorage.getItem('gl_badges')) || [],
+      currentLevel: 1,
+      currentSublevel: 1
+    };
+
+    function saveState() {
+      localStorage.setItem('gl_name', state.name);
+      localStorage.setItem('gl_avatar', state.avatar);
+      localStorage.setItem('gl_xp', state.xp);
+      localStorage.setItem('gl_keys', state.keys);
+      localStorage.setItem('gl_crystals', state.crystals);
+      localStorage.setItem('gl_restoration', state.restoration);
+      localStorage.setItem('gl_levels', JSON.stringify(state.levelsCompleted));
+      localStorage.setItem('gl_worlds', JSON.stringify(state.worldsCompleted));
+      localStorage.setItem('gl_missions', JSON.stringify(state.worldMissions));
+      localStorage.setItem('gl_inventory', JSON.stringify(state.inventory));
+      localStorage.setItem('gl_badges', JSON.stringify(state.badges));
+      updateUI();
+    }
+
+    function showView(viewId) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      const activeView = document.getElementById(viewId);
+      if(activeView) activeView.classList.add('active');
+      window.scrollTo(0,0);
+    }
+
+    function createParticles() {
+      const c = document.getElementById('particles');
+      if(!c) return;
+      for (let i = 0; i < 30; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.left = Math.random() * 100 + 'vw';
+        p.style.top = Math.random() * 100 + 'vh';
+        p.style.animationDelay = Math.random() * 6 + 's';
+        c.appendChild(p);
+      }
+    }
+
+    // Level Mapping Constants
+    const levelMeta = {
+      1: { title: "Chamber of Definitions", desc: "Unlock complex contextual verbs, academic tier-3 adjectives, and basic literary constructs." },
+      2: { title: "Vault of Echoed Passages", desc: "Dive deep into core text analysis, structural phrasing, and hidden subtext meaning configurations." },
+      3: { title: "Hall of Cryptic Sentences", desc: "Repair passive voice systems, complex sentence fragments, and text clause alignments." },
+      4: { title: "Crosswords of Antiquity", desc: "Uncover missing historical keywords, literary synonym patterns, and archaic vocabulary paths." },
+      5: { title: "Crypt of Deep Insights", desc: "Solve raw thematic textual inferences, author perspective analyses, and symbolic readings." }
+    };
+
+    const l1Data = {
+      vocab: [
+        { word: 'Epiphany', def: 'A sudden, powerful moment of profound structural realization or insight.', wrong: ['A long, tedious historical journey.', 'A specialized form of poetic rhythmic meter.'] },
+        { word: 'Paradox', def: 'A statement that appears self-contradictory but reveals an underlying complex truth.', wrong: ['An direct grammatical error in complex sentences.', 'A geometric blueprint pattern.'] },
+        { word: 'Resilience', def: 'The capacity to recover quickly from severe structural hardships or emotional duress.', wrong: ['An extreme physical weakness.', 'Total active indifference to narrative art.'] }
+      ],
+      synonymGrid: {
+        words: ['BRAVE', 'ANCIENT', 'JOURNEY', 'WISDOM', 'SHADOW'],
+        hidden: ['COURAGEOUS', 'ARCHAIC', 'ODYSSEY', 'INSIGHT', 'GLOOM']
+      }
+    };
+
+    // Authentic Literary Worlds Matrix
+    const literaryWorlds = [
+      { id: 'harry_potter', title: 'Harry Potter', author: 'J.K. Rowling', emoji: '⚡', genre: 'Fantasy', year: 1997, excerpt: '"Mr and Mrs Dursley, of number four, Privet Drive, were proud to say that they were perfectly normal, thank you very much."', vocabWords: [{word:'Peculiar', def:'Strange or unusual', wrong:['Normal','Boring']}], speakingPrompt: 'If you could interview one character from this world, who would it be and why?', readingQ: { q: 'What does the tone suggest?', correct: 'The narrator is ironic.', wrong: ['They are boring.', 'The narrator loves them.'] }, writingPrompt: 'Write a quick diary entry from Harry\'s viewpoint.' },
+      { id: 'percy_jackson', title: 'Percy Jackson', author: 'Rick Riordan', emoji: '🔱', genre: 'Mythology', year: 2005, excerpt: '"Look, I didn\'t want to be a half-blood. If you\'re reading this because you think you might be one, close this book right now."', vocabWords: [{word:'Mortal', def:'Subject to death', wrong:['Immortal','Weapon']}], speakingPrompt: 'Describe a dangerous modern heroic quest.', readingQ: { q: 'Why does Percy warn readers?', correct: 'Using dramatic irony.', wrong: ['He hates reading.', 'The book is cursed.'] }, writingPrompt: 'Draft your meeting with a god.' },
+      { id: 'little_prince', title: 'The Little Prince', author: 'Antoine de Saint-Exupéry', emoji: '🌹', genre: 'Philosophical', year: 1943, excerpt: '"Grown-ups never understand anything by themselves, and it is tiresome for children to be always explaining things."', vocabWords: [{word:'Essential', def:'Absolutely necessary', wrong:['Optional','Visible']}], speakingPrompt: 'What is truly essential in life?', readingQ: { q: 'What is criticized?', correct: 'Loss of imagination.', wrong: ['Physical sight.', 'Adult math rules.'] }, writingPrompt: 'Write a conversation with the fox.' },
+      { id: 'hunger_games', title: 'The Hunger Games', author: 'Suzanne Collins', emoji: '🔥', genre: 'Dystopian', year: 2008, excerpt: '"When I wake up, the other side of the bed is cold. My fingers stretch out, seeking Prim\'s warmth."', vocabWords: [{word:'Tribute', def:'A chosen representative', wrong:['A forced gift','A structural shield']}], speakingPrompt: 'Is defiance justified against unjust laws?', readingQ: { q: 'What does the scene reveal?', correct: 'Harsh structural poverty.', wrong: ['Wealthy status.', 'Cold weather factors.'] }, writingPrompt: 'Draft a warning from District 12.' },
+      { id: 'narnia', title: 'The Chronicles of Narnia', author: 'C.S. Lewis', emoji: '🦁', genre: 'Fantasy / Allegory', year: 1950, excerpt: '"Once there were four children whose names were Peter, Susan, Edmund, and Lucy."', vocabWords: [{word:'Treachery', def:'Betrayal of trust', wrong:['Valour','Honesty']}], speakingPrompt: 'Would you cross a wardrobe portal?', readingQ: { q: 'Why use WWII settings?', correct: 'To contrast real escapism.', wrong: ['Historical exam prep.', 'Random choice patterns.'] }, writingPrompt: 'Describe passing the portal frames.' },
+      { id: 'christmas_carol', title: 'A Christmas Carol', author: 'Charles Dickens', emoji: '👻', genre: 'Social Criticism', year: 1843, excerpt: '"Marley was dead: to begin with. There is no doubt whatever about that."', vocabWords: [{word:'Miser', def:'A wealth hoarder', wrong:['Philanthropist','Phantom']}], speakingPrompt: 'Can any human change completely?', readingQ: { q: 'Why emphasize death?', correct: 'To establish redemption weight.', wrong: ['A legal error.', 'Humorous light fillers.'] }, writingPrompt: 'Write Scrooge\'s morning thoughts.' },
+      { id: 'boulevard', title: 'Boulevard', author: 'Flor Salvador', emoji: '🚬', genre: 'Drama / Romance', year: 2020, excerpt: '"El boulevard de los sueños rotos era el único lugar donde Luke se sentía libre de sus propios demonios."', vocabWords: [{word:'Demons', def:'Internal struggles', wrong: ['Monsters', 'Friends']}], speakingPrompt: 'How do environment metrics alter paths?', readingQ: { q: 'What does the boulevard represent?', correct: 'A mental sanctuary.', wrong: ['A normal street lane.', 'An academic complex.'] }, writingPrompt: 'Write a message to Luke.' },
+      { id: 'romeo_juliet', title: 'Romeo and Juliet', author: 'William Shakespeare', emoji: '⚔️', genre: 'Tragedy', year: 1597, excerpt: '"What\'s in a name? That which we call a rose by any other name would smell as sweet."', vocabWords: [{word:'Enmity', def:'Deep structural hatred', wrong:['Friendship','Alliances']}], speakingPrompt: 'Do family connections shape our choices?', readingQ: { q: 'What does the quote challenge?', correct: 'Artificial labels.', wrong: ['Botanical traits.', 'The market costs.'] }, writingPrompt: 'Write a secret unsent truce letter.' },
+      { id: 'frankenstein', title: 'Frankenstein', author: 'Mary Shelley', emoji: '🧟', genre: 'Gothic / Sci-Fi', year: 1818, excerpt: '"It was on a dreary night of November that I beheld the accomplishment of my toils."', vocabWords: [{word:'Toil', def:'Exhausting labor', wrong:['Relaxation','Leisure']}], speakingPrompt: 'Who bears the ultimate accountability?', readingQ: { q: 'What tone is established?', correct: 'Ominous regret.', wrong: ['Triumphant joy.', 'Scientific pride.'] }, writingPrompt: 'Draft the creature\'s first sentence.' },
+      { id: 'fault_stars', title: 'The Fault in Our Stars', author: 'John Green', emoji: '☁️', genre: 'Young Adult', year: 2012, excerpt: '"Some infinities are bigger than other infinities."', vocabWords: [{word:'Infinity', def:'Boundless space or time', wrong:['A finite loop','A short span']}], speakingPrompt: 'How do narratives transform sorrow?', readingQ: { q: 'What does the quote imply?', correct: 'Value over duration.', wrong: ['Math calculations.', 'Star pattern loops.'] }, writingPrompt: 'Write an infinity card entry.' }
+    ];
+
+    let currentWorld = null;
+    let currentMission = 0;
+    let currentQ = 0;
+
+    // Interface Sync Logic
+    function updateUI() {
+      const name = state.name || 'Guardian';
+      document.getElementById('profile-name-display').textContent = name;
+      document.getElementById('map-name').textContent = name;
+      document.getElementById('cert2-name').textContent = name;
+      document.getElementById('profile-avatar-display').textContent = state.avatar;
+      document.getElementById('map-avatar').textContent = state.avatar;
+      
+      document.getElementById('stat-xp').textContent = state.xp;
+      document.getElementById('map-xp-val').textContent = state.xp;
+      document.getElementById('stat-keys').textContent = `${state.keys}/5`;
+      document.getElementById('map-keys-val').textContent = `${state.keys}/5`;
+      document.getElementById('stat-crystals').textContent = state.crystals;
+      document.getElementById('map-crystals-val').textContent = state.crystals;
+      
+      // Calculate global restoration completion metric
+      const totalLvl = 5;
+      const totalWorlds = literaryWorlds.length;
+      const completedLvlCount = state.levelsCompleted.length;
+      const completedWorldsCount = state.worldsCompleted.length;
+      const pct = Math.min(100, Math.round(((completedLvlCount + completedWorldsCount) / (totalLvl + totalWorlds)) * 100));
+      
+      state.restoration = pct;
+      document.getElementById('stat-restoration').textContent = pct + '%';
+      document.getElementById('map-restore-val').textContent = pct + '%';
+      document.getElementById('progress-bar').style.width = pct + '%';
+      document.getElementById('progress-percent').textContent = pct + '%';
+
+      // Re-evaluate rank levels
+      let r = 'Apprentice Guardian';
+      if(state.xp >= 300) r = 'Junior Guardian';
+      if(state.xp >= 600) r = 'High Archivist';
+      if(state.worldsCompleted.length >= 10) r = 'Master Literary Guardian';
+      document.getElementById('profile-rank-value').textContent = r;
+
+      // Map Doors locks sync
+      document.querySelectorAll('#view-map .grid:first-of-type .map-door').forEach((door, index) => {
+        const lvlNum = index + 1;
+        if(lvlNum === 1 || state.levelsCompleted.includes(lvlNum - 1)) {
+          door.classList.remove('locked');
+          if(state.levelsCompleted.includes(lvlNum)) door.classList.add('completed');
+        }
+      });
+
+      // Portal access verification
+      const hallDoor = document.getElementById('hall-infinite-door');
+      const passDoor = document.getElementById('passport-door');
+      if(state.keys >= 5) {
+        hallDoor.classList.remove('locked');
+        passDoor.classList.remove('locked');
+        const lockLabel = document.getElementById('hall-lock-label');
+        if(lockLabel) lockLabel.style.display = 'none';
+      }
+
+      // Sync items inventory opacity triggers
+      const invDivs = document.querySelectorAll('#inventory-grid > div');
+      if(invDivs.length >= 6) {
+        invDivs.forEach((div, idx) => {
+          if(state.inventory.includes(idx)) div.style.opacity = '1';
+        });
+      }
+
+      // Display Authoring door once all books have been mastered
+      const blankDoor = document.getElementById('blank-book-door');
+      if(blankDoor) blankDoor.style.display = state.worldsCompleted.length >= 10 ? 'block' : 'none';
+
+      renderBadges();
+    }
+
+    function renderBadges() {
+      const g = document.getElementById('badges-grid');
+      if(!g) return;
+      g.innerHTML = '';
+      const pool = [
+        { id: 'v1', icon: '📖', name: 'Word Hunter' },
+        { id: 'v2', icon: '🔍', name: 'Text Repairman' },
+        { id: 'v3', icon: '🧠', name: 'Logic Wizard' },
+        { id: 'master_guardian', icon: '🌟', name: 'Master Guardian' }
+      ];
+      pool.forEach(b => {
+        const owned = state.badges.includes(b.id);
+        g.innerHTML += `
+          <div class="badge-item p-3 text-center transition-all ${owned ? 'opacity-100 celebrate-pulse' : 'opacity-20'}">
+            <div class="text-xl">${b.icon}</div>
+            <div class="text-xs font-alegreya-sans mt-1">${b.name}</div>
+          </div>`;
+      });
+    }
+
+    // Avatar Configuration Form
+    document.getElementById('profile-form').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const input = document.getElementById('guardian-name-input').value.trim();
+      if(!input) return;
+      state.name = input;
+      saveState();
+      showView('view-map');
+    });
+
+    document.querySelectorAll('.avatar-opt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.avatar-opt').forEach(b => b.classList.remove('bg-[#c9a227]', 'text-[#0a1628]'));
+        btn.classList.add('bg-[#c9a227]', 'text-[#0a1628]');
+        state.avatar = btn.getAttribute('data-avatar');
+      });
+    });
+
+    // Core Map Level Router Lógica
+    function enterLevel(id) {
+      if(id > 1 && !state.levelsCompleted.includes(id - 1)) {
+        showFeedback(false, 'Locked Chamber', 'Complete previous chambers to unlock the archive seals.', '', () => {});
+        return;
+      }
+      state.currentLevel = id;
+      const meta = levelMeta[id];
+      document.getElementById('l1-title').textContent = `Chamber ${id}: ${meta.title}`;
+      document.getElementById('l1-desc').textContent = meta.desc;
+      document.getElementById('l1-intro').classList.remove('hidden');
+      document.getElementById('l1-sublevel').classList.add('hidden');
+      showView('view-level-detail');
+    updateUI();
+    }
+
+    function showFeedback(success, title, desc, tag, callback) {
+      const o = document.getElementById('feedback-overlay');
+      document.getElementById('feedback-icon').textContent = success ? '✨' : '🔒';
+      document.getElementById('feedback-title').textContent = title;
+      document.getElementById('feedback-desc').textContent = desc;
+      const btn = document.getElementById('feedback-btn');
+      o.classList.remove('hidden');
+      btn.onclick = () => {
+        o.classList.add('hidden');
+        if(callback) callback();
+      };
+    }
+
+    function startSublevel(lvl, sub) {
+      state.currentSublevel = sub;
+      document.getElementById('l1-intro').classList.add('hidden');
+      const box = document.getElementById('l1-sublevel');
+      box.classList.remove('hidden');
+      box.innerHTML = '';
+      currentQ = 0;
+
+      if(sub === 1) renderVocabChallenge();
+      else if(sub === 2) renderSynonymChallenge();
+    }
+
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i = a.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    function escHtml(s) {
+      return s.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+    }
+
+    function renderVocabChallenge() {
+      const box = document.getElementById('l1-sublevel');
+      const data = l1Data.vocab[currentQ];
+      if(!data) {
+        completeSublevel(1);
+        return;
+      }
+      const opts = shuffle([data.def, ...data.wrong]);
+      box.innerHTML = `
+        <div class="fade-in">
+          <div class="flex justify-between items-center mb-4">
+            <span class="font-cinzel text-sm opacity-70">Challenge Module: Definitions</span>
+            <span class="font-alegreya-sans text-sm opacity-60">${currentQ + 1}/${l1Data.vocab.length}</span>
+          </div>
+          <div class="text-center mb-6">
+            <h3 class="font-cinzel text-3xl text-[#c9a227] glow-text">${data.word}</h3>
+          </div>
+          <div class="space-y-3">
+            ${opts.map(o => `<button class="activity-card p-4 w-full text-left font-alegreya-sans transition-all hover:border-[#c9a227]" onclick="checkVocabAnswer(this, '${escHtml(o)}', '${escHtml(data.def)}')">${o}</button>`).join('')}
+          </div>
+        </div>`;
+    }
+
+    function checkVocabAnswer(btn, selected, correct) {
+      if(selected === correct) {
+        btn.classList.add('correct');
+        state.xp += 10;
+        currentQ++;
+        setTimeout(() => { renderVocabChallenge(); }, 800);
+      } else {
+        btn.classList.add('incorrect');
+        state.xp = Math.max(0, state.xp - 2);
+        showFeedback(false, 'Incorrect Fit', 'That matching line does not fit the textual intent. Try again.', '', () => {});
+      }
+      saveState();
+    }
+
+    function renderSynonymChallenge() {
+      const box = document.getElementById('l1-sublevel');
+      box.innerHTML = `
+        <div class="fade-in text-center">
+          <h3 class="font-cinzel text-sm opacity-70 mb-4">Challenge Module: Synonym Matrix</h3>
+          <p class="font-alegreya-sans text-sm max-w-sm mx-auto mb-6 opacity-80">Match the core keywords to unlock ancient vault paths.</p>
+          <div class="grid grid-cols-2 gap-3 max-w-xs mx-auto">
+            <div class="p-3 bg-[rgba(201,162,39,0.1)] border border-[#c9a227] rounded text-xs font-cinzel">BRAVE</div>
+            <div class="p-3 bg-[rgba(10,22,40,0.6)] border rounded text-xs">COURAGEOUS</div>
+            <div class="p-3 bg-[rgba(201,162,39,0.1)] border border-[#c9a227] rounded text-xs font-cinzel">ANCIENT</div>
+            <div class="p-3 bg-[rgba(10,22,40,0.6)] border rounded text-xs">ARCHAIC</div>
+          </div>
+          <button class="font-cinzel px-6 py-2 bg-[#c9a227] text-[#0a1628] rounded mt-6 text-sm" onclick="completeSublevel(2)">Complete Chamber Matrix</button>
+        </div>`;
+    }
+
+    function completeSublevel(subId) {
+      if(subId === 1) {
+        startSublevel(state.currentLevel, 2);
+      } else {
+        if(!state.levelsCompleted.includes(state.currentLevel)) {
+          state.levelsCompleted.push(state.currentLevel);
+          state.keys = Math.min(5, state.keys + 1);
+          state.xp += 50;
+          if(!state.inventory.includes(state.currentLevel - 1)) state.inventory.push(state.currentLevel - 1);
+          if(state.currentLevel === 1 && !state.badges.includes('v1')) state.badges.push('v1');
+          if(state.currentLevel === 3 && !state.badges.includes('v2')) state.badges.push('v2');
+          if(state.currentLevel === 5 && !state.badges.includes('v3')) state.badges.push('v3');
+        }
+        saveState();
+        showFeedback(true, 'Chamber Restored!', `You have repaired all language fragments inside Level ${state.currentLevel}. An Archive Key has been placed in your passport inventory.`, '', () => {
+          showView('view-map');
+        });
+      UpdateUI();
+      }
+    }
+
+    // Hall of Infinite Stories Renderers
+    function buildHallWorlds() {
+      const c = document.getElementById('worlds-container');
+      if(!c) return;
+      c.innerHTML = '';
+      literaryWorlds.forEach(w => {
+        const done = state.worldsCompleted.includes(w.id);
+        c.innerHTML += `
+          <div class="book-pedestal bg-[rgba(10,22,40,0.85)] p-5 text-center flex flex-col justify-between min-h-[250px] ${done ? 'completed-book' : ''}" onclick="enterWorld('${w.id}')">
+            <div>
+              <div class="text-4xl mb-3">${w.emoji}</div>
+              <h4 class="font-cinzel text-sm text-white mb-1">${w.title}</h4>
+              <p class="font-alegreya-sans text-xs opacity-60 mb-3">${w.author}</p>
+              <span class="text-[11px] px-2 py-0.5 rounded bg-[rgba(201,162,39,0.15)] text-[#c9a227] font-cinzel">${w.genre}</span>
+            </div>
+            <div class="mt-4 font-alegreya-sans text-xs">
+              ${done ? '<span class="text-emerald-400 font-bold">✓ Mastered</span>' : '<span class="opacity-50">Explore Realm</span>'}
+            </div>
+          </div>`;
+      });
+    }
+
+    function enterWorld(id) {
+      if(state.keys < 5) {
+        showFeedback(false, 'Portal Shield Active', 'You must retrieve 5 Archive Keys across the Chamber wings to bypass the protection arrays.', '', () => {});
+        return;
+      }
+      currentWorld = literaryWorlds.find(w => w.id === id);
+      if(!currentWorld) return;
+      if(!state.worldMissions[id]) state.worldMissions[id] = { completed: [] };
+      currentMission = 0;
+      showView('view-world');
+      renderWorldWorkspaceHeader();
+      renderMissionTabs();
+      renderActiveMission();
+    }
+
+    function renderWorldWorkspaceHeader() {
+      const h = document.getElementById('world-header');
+      h.innerHTML = `
+        <div class="text-4xl mb-2">${currentWorld.emoji}</div>
+        <h2 class="font-cinzel text-2xl glow-text mb-1 text-white">${currentWorld.title}</h2>
+        <p class="font-alegreya-sans text-sm opacity-70">${currentWorld.author} • ${currentWorld.genre} • ${currentWorld.year}</p>`;
+    }
+
+    const missionList = ['Exordium', 'Core Text', 'Lexicon', 'Expression', 'Audio Sync', 'Chronicle', 'Analysis', 'Reflection'];
+
+    function renderMissionTabs() {
+      const t = document.getElementById('mission-tabs');
+      const done = state.worldMissions[currentWorld.id]?.completed || [];
+      t.innerHTML = missionList.map((m, i) => {
+        let cls = 'mission-tab flex-shrink-0';
+        if(i === currentMission) cls += ' active-tab';
+        else if(done.includes(i)) cls += ' done-tab';
+        return `<button class="${cls}" onclick="switchMission(${i})">${m}</button>`;
+      }).join('');
+    }
+
+    function switchMission(i) {
+      currentMission = i;
+      renderMissionTabs();
+      renderActiveMission();
+    }
+
+    function renderActiveMission() {
+      const workspace = document.getElementById('mission-workspace');
+      const done = state.worldMissions[currentWorld.id]?.completed.includes(currentMission);
+      workspace.innerHTML = '';
+
+      switch(currentMission) {
+        case 0: // Exordium Text Entry
+          workspace.innerHTML = `
+            <div class="fade-in space-y-4">
+              <div class="elias-box p-4"><p class="text-sm">Read the raw authentic opening fragment carefully before altering structural parameters.</p></div>
+              <div class="activity-card p-6 italic font-serif text-lg text-center leading-relaxed bg-black/40">"${currentWorld.excerpt}"</div>
+              <div class="text-center pt-4">
+                <button class="font-cinzel px-6 py-2 bg-[#c9a227] text-[#0a1628] rounded" onclick="executeMissionFinish(0)">Mark Read & Synchronize</button>
+              </div>
+            </div>`;
+          break;
+        case 1: // Core Text Reading Query
+          workspace.innerHTML = `
+            <div class="fade-in space-y-4">
+              <div class="elias-box p-4"><p class="text-sm">${currentWorld.readingQ.q}</p></div>
+              <div class="space-y-2">
+                <button class="activity-card p-4 w-full text-left" onclick="checkReadingQuest(this, true)">${currentWorld.readingQ.correct}</button>
+                ${currentWorld.readingQ.wrong.map(w => `<button class="activity-card p-4 w-full text-left" onclick="checkReadingQuest(this, false)">${w}</button>`).join('')}
+              </div>
+            </div>`;
+          break;
+        case 2: // Lexicon Vocabulary System
+          const pair = currentWorld.vocabWords[0] || {word: 'Sample', def:'Definition template', wrong:['w1']};
+          const opts = shuffle([pair.def, ...pair.wrong]);
+          workspace.innerHTML = `
+            <div class="fade-in space-y-4 text-center">
+              <div class="font-cinzel text-xl text-[#c9a227]">${pair.word}</div>
+              <div class="space-y-2 text-left max-w-md mx-auto pt-4">
+                ${opts.map(o => `<button class="activity-card p-4 w-full text-left" onclick="checkLexiconQuest(this, '${escHtml(o)}', '${escHtml(pair.def)}')">${o}</button>`).join('')}
+              </div>
+            </div>`;
+          break;
+        case 3: // Expression Prompt Practice
+          workspace.innerHTML = `
+            <div class="fade-in space-y-4">
+              <div class="activity-card p-6">
+                <h4 class="font-cinzel text-[#c9a227] mb-2 text-sm">Oral Task Prompt</h4>
+                <p class="text-lg leading-relaxed mb-6 font-cinzel text-white">${currentWorld.speakingPrompt}</p>
+                <div class="hint-panel p-4 text-xs space-y-1 mb-4">
+                  <p class="font-bold text-[#c9a227]">Guidelines for speaking matrix:</p>
+                  <p>• Formulate initial responses utilizing structural tokens ("In my view...", "I deduce...")</p>
+                  <p>• Speak cohesively for 60-120 seconds incorporating active realm keywords.</p>
+                </div>
+                <button class="font-cinzel px-6 py-2 bg-[#c9a227] text-[#0a1628] rounded w-full" onclick="executeMissionFinish(3)">Oral Practice Formulated ✓</button>
+              </div>
+            </div>`;
+          break;
+        case 4: // Audio Placeholder Integration
+          workspace.innerHTML = `
+            <div class="fade-in text-center p-8 activity-card space-y-4">
+              <div class="text-4xl">🎧</div>
+              <p class="text-sm font-cinzel text-[#c9a227]">Audio Recording Placeholder Integration Slot</p>
+              <p class="text-xs opacity-75 max-w-sm mx-auto">Future module layers will feed direct audiobook transcripts, streaming sound feeds, and dynamic listening comprehension evaluation matrices here.</p>
+              <button class="font-cinzel px-6 py-2 bg-[#c9a227] text-[#0a1628] rounded mt-4" onclick="executeMissionFinish(4)">Bypass Layer</button>
+            </div>`;
+          break;
+        case 5: // Chronicle Writing Prompt
+          workspace.innerHTML = `
+            <div class="fade-in space-y-4">
+              <div class="elias-box p-4"><p class="text-sm"><strong>Chronicle Task:</strong> ${currentWorld.writingPrompt}</p></div>
+              <textarea class="writing-area w-full p-4 h-40" id="essay-box" placeholder="Compose your advanced response here... (Minimum 20 words required for integration verification)"></textarea>
+              <button class="font-cinzel px-6 py-2 bg-[#c9a227] text-[#0a1628] rounded w-full" onclick="verifyEssayChronicle()">Commit Text to Ledger</button>
+            </div>`;
+          break;
+        case 6: // Analysis Module Placeholder
+          workspace.innerHTML = `
+            <div class="fade-in text-center p-8 activity-card space-y-4">
+              <div class="text-4xl">📊</div>
+              <p class="text-sm font-cinzel text-[#c9a227]">Cross-Textual Critique Core</p>
+              <p class="text-xs opacity-75 max-w-sm mx-auto">Analyze structural symbolism and systemic formatting standards mapped from author style frameworks.</p>
+              <button class="font-cinzel px-6 py-2 bg-[#c9a227] text-[#0a1628] rounded" onclick="executeMissionFinish(6)">Complete Analysis</button>
+            </div>`;
+          break;
+        case 7: // Reflection LEA Frame
+          workspace.innerHTML = `
+            <div class="fade-in space-y-4">
+              <div class="elias-box p-4"><p class="text-sm"><strong>Language Experience Approach:</strong> Ground this realm experience with your own personal journey parameters.</p></div>
+              <div class="space-y-3">
+                <div>
+                  <label class="text-xs opacity-60 block mb-1">What element from this specific story universe directly mirrors your internal journey?</label>
+                  <textarea class="writing-area w-full p-3 h-20" id="r-box-1" placeholder="Type thoughts..."></textarea>
+                </div>
+                <div>
+                  <label class="text-xs opacity-60 block mb-1">How can the narrative tools acquired alter your communication mechanics?</label>
+                  <textarea class="writing-area w-full p-3 h-20" id="r-box-2" placeholder="Type thoughts..."></textarea>
+                </div>
+              </div>
+              <button class="font-cinzel px-6 py-2 bg-[#c9a227] text-[#0a1628] rounded w-full mt-4" onclick="verifyReflectionLEA()">Finalize Realm Mastery</button>
+            </div>`;
+          break;
+      }
+
+      if(done && workspace.querySelector('button')) {
+        const primaryBtn = workspace.querySelector('button:last-of-type');
+        if(primaryBtn && !primaryBtn.textContent.includes('✓')) {
+          primaryBtn.textContent += ' (Completed ✓)';
+          primaryBtn.classList.replace('bg-[#c9a227]', 'bg-emerald-700');
+        }
+      }
+    }
+
+    function checkReadingQuest(btn, isCorrect) {
+      if(isCorrect) {
+        btn.classList.add('correct');
+        executeMissionFinish(1);
+      } else {
+        btn.classList.add('incorrect');
+        showFeedback(false, 'Interpretation Conflict', 'The author intentions imply a different structural outcome. Review text parameters.', '', () => {});
+      }
+    }
+
+    function checkLexiconQuest(btn, selected, correct) {
+      if(selected === correct) {
+        btn.classList.add('correct');
+        executeMissionFinish(2);
+      } else {
+        btn.classList.add('incorrect');
+        showFeedback(false, 'Lexical Mismatch', 'That configuration mapping mismatches the definition criteria.', '', () => {});
+      }
+    }
+
+    function verifyEssayChronicle() {
+      const text = document.getElementById('essay-box').value.trim();
+      const tokens = text.split(/\s+/).filter(t => t.length > 0);
+      if(tokens.length < 20) {
+        showFeedback(false, 'Insufficient Length', 'Your narrative chronicle lacks structural weight. Expand your thought matrix past 20 words.', '', () => {});
+        return;
+      }
+      executeMissionFinish(5);
+    }
+
+    function verifyReflectionLEA() {
+      const t1 = document.getElementById('r-box-1').value.trim();
+      const t2 = document.getElementById('r-box-2').value.trim();
+      if(!t1 || !t2) {
+        showFeedback(false, 'Incomplete Fields', 'Fill all reflection matrix slots to correctly bind your personal ledger entries.', '', () => {});
+        return;
+      }
+      executeMissionFinish(7);
+    }
+
+    function executeMissionFinish(mIdx) {
+      if(!state.worldMissions[currentWorld.id].completed.includes(mIdx)) {
+        state.worldMissions[currentWorld.id].completed.push(mIdx);
+        state.xp += 25;
+        state.crystals += 2;
+      }
+
+      // Check if all 8 missions inside this world are done
+      if(state.worldMissions[currentWorld.id].completed.length >= 8 && !state.worldsCompleted.includes(currentWorld.id)) {
+        state.worldsCompleted.push(currentWorld.id);
+        state.xp += 100;
+        
+        // Passport stamp check
+        buildPassportStamps();
+        
+        if(state.worldsCompleted.length >= 10 && !state.badges.includes('master_guardian')) {
+          state.badges.push('master_guardian');
+          saveState();
+          showFeedback(true, 'Realm Absolute Mastery!', 'All ten authentic worlds have been successfully restored! Your Master Guardian Certificate is ready inside the passport terminal.', '', () => {
+            showView('view-celebration');
+          });
+          return;
+        }
+
+        saveState();
+        showFeedback(true, 'Realm Restored!', `You have completed all narrative missions inside ${currentWorld.title}. Your custom stamp has been successfully burnt into your Passport.`, '', () => {
+          showView('view-hall');
+          buildHallWorlds();
+        });
+        return;
+      }
+
+      saveState();
+      currentMission = Math.min(7, currentMission + 1);
+      renderMissionTabs();
+      renderActiveMission();
+    }
+
+    // Passport Stamp Render Logic
+    function buildPassportStamps() {
+      const container = document.getElementById('passport-stamps-container');
+      if(!container) return;
+      container.innerHTML = '';
+      literaryWorlds.forEach(w => {
+        const owned = state.worldsCompleted.includes(w.id);
+        container.innerHTML += `
+          <div class="passport-stamp flex flex-col items-center justify-center border-2 rounded-full p-2 w-20 h-20 ${owned ? 'earned border-[#c9a227]' : 'opacity-20 border-gray-600'}">
+            <span class="text-xl">${w.emoji}</span>
+            <span class="text-[8px] uppercase tracking-tighter text-white mt-1 block max-w-[60px] overflow-hidden text-ellipsis whitespace-nowrap">${w.id.replace('_',' ')}</span>
+          </div>`;
+      });
+    }
+
+    // Creative Blank Book Engine
+    function submitBlankBook(e) {
+      e.preventDefault();
+      const title = document.getElementById('bb-title').value.trim();
+      const genre = document.getElementById('bb-genre').value.trim();
+      const chars = document.getElementById('bb-characters').value.trim();
+      const setting = document.getElementById('bb-setting').value.trim();
+      const plot = document.getElementById('bb-plot').value.trim();
+
+      if(!title || !genre || !chars || !setting || !plot) return;
+
+      state.xp += 200;
+      saveState();
+      showFeedback(true, 'Chronicle Forged!', `"${title}" has been successfully appended to the Great Library Infinite Ledger. Your narrative matrix is complete.`, '', () => {
+        showView('view-hall');
+      });
+    }
+
+    // Global Initialization Hooks
+    document.addEventListener('DOMContentLoaded', () => {
+      lucide.createIcons();
+      createParticles();
+      buildHallWorlds();
+      buildPassportStamps();
+      
+      document.getElementById('cert2-date').textContent = new Date().toLocaleDateString();
+
+      // Audio Toggle Engine Mocks
+      const soundBtn = document.getElementById('sound-toggle');
+      let audioMuted = true;
+      soundBtn.addEventListener('click', () => {
+        audioMuted = !audioMuted;
+        soundBtn.innerHTML = audioMuted ? 
+          '<i data-lucide="volume-x" style="width:20px;height:20px;"></i>' : 
+          '<i data-lucide="volume-2" style="width:20px;height:20px;"></i>';
+        lucide.createIcons();
+        soundBtn.classList.toggle('bg-amber-600/30');
+      });
+
+      if(state.name) {
+        showView('view-map');
+      } else {
+        showView('view-home');
+      }
+      updateUI();
+    });
+  </script>
+ </body>
+</html>
